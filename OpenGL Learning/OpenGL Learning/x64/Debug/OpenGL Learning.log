@@ -1,2 +1,5 @@
 ﻿  Application.cpp
+  VertexArray.cpp
+  Generating Code...
+D:\Programming Learning\C++\OpenGL Learning\OpenGL Learning\OpenGL Learning\src\VertexArray.cpp(24,3): warning C4312:  'type cast': conversion from 'unsigned int' to 'const void *' of greater size
   OpenGL Learning.vcxproj -> D:\Programming Learning\C++\OpenGL Learning\OpenGL Learning\x64\Debug\OpenGL Learning.exe
