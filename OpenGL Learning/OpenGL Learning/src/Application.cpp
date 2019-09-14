@@ -113,23 +113,32 @@ int main(void)
 	}
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	float Positions[6] = {
+	float Positions[] = {
 		-0.5f, -0.5f,
-		 0.f,   0.5f,
-		 0.5f, -0.5f
+		 0.5f, -0.5f,
+		 0.5f,  0.5f,
+		-0.5f,  0.5f,
+	};
+
+	unsigned int indices[] = {
+		0,1,2,
+		2,3,0
 	};
 	
 	unsigned int buffer;
 	glGenBuffers(1, &buffer); //This generates a buffer that the GPU can use to draw to the screen
 	glBindBuffer(GL_ARRAY_BUFFER, buffer); //This Selects the buffer that we just created	
-	glBufferData(GL_ARRAY_BUFFER, 6 * sizeof(float), Positions, GL_STATIC_DRAW); //This added the Positions data to the buffer as STATIC meaning that the data won't change but can be called multiple times
+	glBufferData(GL_ARRAY_BUFFER, 6 * 2 * sizeof(float), Positions, GL_STATIC_DRAW); //This added the Positions data to the buffer as STATIC meaning that the data won't change but can be called multiple times
 
 	glEnableVertexAttribArray(0); //Enables the Vertex attributes array
 	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, sizeof(float) * 2, 0); //This says that the Vertices are 2 floats for each vertex
 
+	unsigned int ibo; //Index buffer object
+	glGenBuffers(1, &ibo); //This generates a buffer that the GPU can use to draw to the screen
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo); //This Selects the buffer that we just created	
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, 6 * sizeof(unsigned int), indices, GL_STATIC_DRAW);
 
 	ShaderProgramSource source = ParseShader("res/shaders/Basic.shader");
-
 	std::cout << "VERTEX" << std::endl;
 	std::cout << source.VertexSource << std::endl;
 	std::cout << "FRAGMENT" << std::endl;
@@ -146,7 +155,7 @@ int main(void)
         /* Render here */
         glClear(GL_COLOR_BUFFER_BIT);
 
-		glDrawArrays(GL_TRIANGLES, 0, 3);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr);
     	
         /* Swap front and back buffers */
         glfwSwapBuffers(window);
