@@ -6,6 +6,7 @@
 
 #include "Renderer.h"
 #include "VertexBuffer.h"
+#include "VertexBufferLayout.h"
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "shader.h"
@@ -35,15 +36,17 @@ int main(void)
     /* Make the window's context current */
     glfwMakeContextCurrent(window);
 	glfwSwapInterval(1);
-	
+
+	//This sets up GLEW 
 	if(glewInit() != GLEW_OK)
 	{
 		std::cout << "Glew Error!" << std::endl;
 	}
 	std::cout << glGetString(GL_VERSION) << std::endl;
 
-	//Scope to fix the application not terminating
-	{ 
+	//This Scope to fix the application not terminating properly
+	{
+    	//Magic number values to have a cube be rendered to the screen
 		float Positions[] = {
 		-0.5f, -0.5f,
 		 0.5f, -0.5f,
@@ -55,16 +58,17 @@ int main(void)
 		2,3,0
 	};
 
-		//This code generates and binds a vertex array object
+		//This code generates and binds a vertex array object and vertex buffer
     	VertexArray va;
-    	
 		VertexBuffer vb(Positions, 4 * 2 * sizeof(float));
     	VertexBufferLayout layout;
     	layout.Push<float>(2);
     	va.AddBuffer(vb, layout);
 
+    	//Sets up the index buffer 
 		IndexBuffer ib(indices, 6);
 
+    	//Sets up the shader that will be used
 		Shader shader("res/shaders/Basic.shader");
     	shader.Bind();
     	shader.SetUniform4f("u_Colour", 0.7f, 0.3f, 0.5f, 1.0f);
@@ -74,6 +78,8 @@ int main(void)
     	shader.UnBind();
 		vb.UnBind();
 		ib.UnBind();
+
+    	Renderer renderer;
 		
 		float r = 0.0f;
 		float increment = 0.05f;
@@ -81,16 +87,12 @@ int main(void)
 		while (!glfwWindowShouldClose(window))
 		{
 		    /* Render here */
-		    GLCall(glClear(GL_COLOR_BUFFER_BIT));
-
+			renderer.Clear();
 			shader.Bind();
 			shader.SetUniform4f("u_Colour", r, 0.3f, 0.5f, 1.0f);
+		
+			renderer.Draw(va, ib, shader);
 			
-			va.Bind();
-			ib.Bind();
-			
-			GLCall(glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, nullptr));	
-
 			if (r > 1.0f)
 				increment = -0.01f;
 			else if (r < 0.0f)
