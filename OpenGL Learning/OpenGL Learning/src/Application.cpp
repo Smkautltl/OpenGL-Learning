@@ -10,6 +10,7 @@
 #include "IndexBuffer.h"
 #include "VertexArray.h"
 #include "shader.h"
+#include "Texture.h"
 
 
 int main(void)
@@ -48,20 +49,26 @@ int main(void)
 	{
     	//Magic number values to have a cube be rendered to the screen
 		float Positions[] = {
-		-0.5f, -0.5f,
-		 0.5f, -0.5f,
-		 0.5f,  0.5f,
-		-0.5f,  0.5f,
+		-0.5f, -0.5f, 0.0f, 0.0f,
+		 0.5f, -0.5f, 1.0f, 0.0f,
+		 0.5f,  0.5f, 1.0f, 1.0f,
+		-0.5f,  0.5f, 0.0f, 1.0f
 	};
 		unsigned int indices[] = {
 		0,1,2,
 		2,3,0
 	};
+    	
+		//This enables blending
+    	GLCall(glEnable(GL_BLEND));
+		GLCall(glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA));
 
 		//This code generates and binds a vertex array object and vertex buffer
     	VertexArray va;
-		VertexBuffer vb(Positions, 4 * 2 * sizeof(float));
+		VertexBuffer vb(Positions, 4 * 4 * sizeof(float));
+    	
     	VertexBufferLayout layout;
+    	layout.Push<float>(2);
     	layout.Push<float>(2);
     	va.AddBuffer(vb, layout);
 
@@ -73,6 +80,10 @@ int main(void)
     	shader.Bind();
     	shader.SetUniform4f("u_Colour", 0.7f, 0.3f, 0.5f, 1.0f);
 
+		Texture texture("res/textures/marble.png");
+		texture.Bind();
+    	shader.SetUniform1i("u_Texture", 0);
+    	
 		//These unbinds the buffers
 		va.UnBind();
     	shader.UnBind();
@@ -89,7 +100,7 @@ int main(void)
 		    /* Render here */
 			renderer.Clear();
 			shader.Bind();
-			shader.SetUniform4f("u_Colour", r, 0.3f, 0.5f, 1.0f);
+			//shader.SetUniform4f("u_Colour", r, 0.3f, 0.5f, 1.0f);
 		
 			renderer.Draw(va, ib, shader);
 			
