@@ -82,15 +82,16 @@ int main(void)
 
     	//Sets up a Orthographic projection
 		glm::mat4 proj = glm::ortho(0.f, ViewWidth, 0.f, ViewHeight,-1.0f,1.0f);
-    	glm::vec4 vp(100.f, 100.f, 0.f, 1.f);
+		glm::mat4 view = glm::translate(glm::mat4(1.f), glm::vec3(-100, 0 ,0));
+    	glm::mat4 model = glm::translate(glm::mat4(1.f), glm::vec3(200,200,0));
 
-    	glm::vec4 result = proj * vp;
+		glm::mat4 mvp = proj * view * model;
     	
     	//Sets up the shader that will be used
 		Shader shader("res/shaders/Basic.shader");
     	shader.Bind();
     	shader.SetUniform4f("u_Colour", 0.7f, 0.3f, 0.5f, 1.0f);
-    	shader.SetUniformMat4f("u_MVP", proj);
+    	shader.SetUniformMat4f("u_MVP", mvp);
 
 		Texture texture("res/textures/marble.png");
 		texture.Bind();
