@@ -19,7 +19,9 @@
 int main(void)
 {
     GLFWwindow* window;
-
+	float ViewWidth = 1280.f;
+	float ViewHeight = 720.f;
+	
     /* Initialize the library */
     if (!glfwInit())
         return -1;
@@ -30,7 +32,7 @@ int main(void)
 	glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 	
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(800, 600, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(ViewWidth, ViewHeight, "Hello World", NULL, NULL);
     if (!window)
     {
         glfwTerminate();
@@ -52,10 +54,10 @@ int main(void)
 	{
     	//Magic number values to have a cube be rendered to the screen
 		float Positions[] = {
-		-0.5f, -0.5f, 0.0f, 0.0f,
-		 0.5f, -0.5f, 1.0f, 0.0f,
-		 0.5f,  0.5f, 1.0f, 1.0f,
-		-0.5f,  0.5f, 0.0f, 1.0f
+		 100.f,  100.f,  0.0f, 0.0f,
+		 200.0f, 100.0f, 1.0f, 0.0f,
+		 200.f,  200.f,  1.0f, 1.0f,
+		 100.0f, 200.f,  0.0f, 1.0f
 	};
 		unsigned int indices[] = {
 		0,1,2,
@@ -78,7 +80,11 @@ int main(void)
     	//Sets up the index buffer 
 		IndexBuffer ib(indices, 6);
 
-		glm::mat4 proj = glm::ortho(-2.0f,2.0f,-1.5f,1.5f,-1.0f,1.0f);
+    	//Sets up a Orthographic projection
+		glm::mat4 proj = glm::ortho(0.f, ViewWidth, 0.f, ViewHeight,-1.0f,1.0f);
+    	glm::vec4 vp(100.f, 100.f, 0.f, 1.f);
+
+    	glm::vec4 result = proj * vp;
     	
     	//Sets up the shader that will be used
 		Shader shader("res/shaders/Basic.shader");
@@ -105,16 +111,13 @@ int main(void)
 		{
 		    /* Render here */
 			renderer.Clear();
-			shader.Bind();
-			//shader.SetUniform4f("u_Colour", r, 0.3f, 0.5f, 1.0f);
-		
+			shader.Bind();		
 			renderer.Draw(va, ib, shader);
 			
 			if (r > 1.0f)
 				increment = -0.01f;
 			else if (r < 0.0f)
 				increment = 0.01f;
-
 			r+=increment;
 			
 		    /* Swap front and back buffers */
